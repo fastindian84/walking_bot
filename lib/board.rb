@@ -1,10 +1,14 @@
-require_relative './mini_bot.rb'
+require_relative './robot.rb'
 require 'matrix'
 
 class Board
   class BoardError < StandardError; end
+  class OutOfRangeError < StandardError; end
 
-  attr_reader :rows, :columns
+  EMPTY_CELL = 0
+  BOT_CELL = 1
+
+  attr_reader :rows, :columns, :bot, :position
 
   def initialize(rows:, columns:)
     @rows = rows.to_i
@@ -13,79 +17,38 @@ class Board
     validate!
   end
 
-  def bot?
-    @bot != nil
+  def fill_cell(row, column)
+    update_cell(BOT_CELL, row, column)
   end
 
-  def place_bot(asix_x, asix_y, bot)
-    if bot?
-      @bot.move(asix_x, asix_y, face)
-    else
-      @bot = bot
-    end
+  def free_cell(row, column)
+    update_cell(EMPTY_CELL, row, column)
+  end
+
+  def table
+    @table ||= Matrix.zero(@rows, @columns)
+  end
+
+  def available?(row, column)
+    [row, column].all? { |v| v >= 0 } && table[row, column] == EMPTY_CELL
   end
 
   private
 
+  def update_cell(val, row, column)
+    raise OutOfRangeError, "[#{row}, #{column}] - Invalid coordinates" unless valid_coordinate?(row, column)
+
+    table[row, column] = val
+  end
+
+  def valid_coordinate?(row, column)
+    [row, column].all? { |v| v.is_a?(Integer) && v >= 0 } &&
+      row < @rows && column < @columns
+  end
+
   def validate!
-    if [rows, columns].any? { |v| v <= 0 }
-      raise BoardError, 'rows and columns should greater or equal 1'
-    end
-  end
+    return unless [rows, columns].any? { |v| v <= 0 }
 
-  def matrix
-    @matrix ||= Matrix.zero(@rows, @columns)
-  end
-
-
-  def to_s
-    list = @matrix.to_a
-    columns_size = list[0].size - 1
-
-    column_width = Math.log10(columns_size).to_i + 1
-    index_column_width =  Math.log10(list.size).to_i + 2
-
-    string = ''
-
-    # HEADER
-    string << ' ' * index_column_width
-    string << (('_' * column_width) + ' ') * (columns_size +  1)
-    string << "\n"
-
-
-    list.reverse.each_with_index do |column, column_index|
-      string << (list.size - column_index - 1).to_s
-
-      column.each_with_index do |row, row_index|
-        string << "|" if row_index == 0
-        string << "_" * column_width
-        string << "|"
-      end
-
-      string << "\n"
-    end
-
-    string << ' ' * index_column_width
-
-    (0..columns_size).each do |number|
-      string_number = number.to_s
-
-      string << string_number
-
-      if string_number.length < column_width
-        string << ' ' * (column_width - string_number.length)
-      end
-
-      string << ' '
-    end
-
-    string << "\n"
-
-
-    puts string
-  end
-
-  def report
-
+    raise BoardError, 'rows and columns should greater or equal 1'
   end
 end

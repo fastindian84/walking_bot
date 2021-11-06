@@ -9,13 +9,32 @@ describe Board do
     end
   end
 
-  describe '#place_bot' do
-    it 'puts bot under certain position' do
-      bot = MiniBot.new('NORTH')
-      bord = Board.new(rows: 10, columns: 5)
+  context 'API' do
+    let(:board) { Board.new(rows: 5, columns: 5) }
 
-      bord.place_bot(0, 0, bot)
-      expect(bord.bot?).to be_truthy
+    it '#fill_cell' do
+      expect(board.table[3, 3]).to eq Board::EMPTY_CELL
+      board.fill_cell(3, 3)
+      expect(board.table[3, 3]).to eq Board::BOT_CELL
+    end
+
+    it '#free_cell' do
+      board.fill_cell(3, 3)
+      expect(board.table[3, 3]).to eq Board::BOT_CELL
+      board.free_cell(3, 3)
+      expect(board.table[3, 3]).to eq Board::EMPTY_CELL
+    end
+    it '#update_cell', 'raise error' do
+      expect { board.fill_cell(10, 10) }.to raise_error Board::OutOfRangeError
+    end
+
+    it '#available?' do
+      expect(board.available?(3, 3)).to eq true
+      expect(board.available?(0, 0)).to eq true
+      expect(board.available?(5, 5)).to eq false
+
+      board.fill_cell(3, 3)
+      expect(board.available?(3, 3)).to eq false
     end
   end
 end
