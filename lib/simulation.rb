@@ -1,4 +1,5 @@
 require_relative './presenters/board_presenter.rb'
+require_relative './services/path_finder_service.rb'
 
 class Simulation
   attr_reader :robot, :board
@@ -7,13 +8,17 @@ class Simulation
     @board = board
   end
 
-  def place_bot(robot, row:, column:)
+  def place_robot(robot, row:, column:)
     column = [column, board.columns - 1].min
     row = [row, board.rows - 1].min
 
     @robot = robot
 
     move_to(row, column)
+  end
+
+  def place_obstacle(row, column)
+    board.place_obstacle(row, column)
   end
 
   def report
@@ -24,8 +29,12 @@ class Simulation
     Presenters::BoardPresenter.call(board, robot)
   end
 
+  def short_path(row, column)
+    Services::PathFinderService.new(board, robot).to(row, column)
+  end
+
   def move
-    step(*next_step)
+    step(*robot.next_step_forward)
   end
 
   def left
@@ -36,22 +45,10 @@ class Simulation
     robot.turn_right!
   end
 
-  def step(row, column)
-    move_to(row, column) if board.available?(row, column)
-  end
-
   private
 
-  def next_step
-    if robot.north?
-      [robot.row + 1, robot.column]
-    elsif robot.south?
-      [robot.row - 1, robot.column]
-    elsif robot.west?
-      [robot.row, robot.column - 1]
-    elsif robot.east?
-      [robot.row, robot.column + 1]
-    end
+  def step(row, column)
+    move_to(row, column) if board.available?(row, column)
   end
 
   def move_to(row, column)
@@ -59,6 +56,6 @@ class Simulation
 
     robot.position = [row, column]
 
-    board.fill_cell(*robot.position)
+    board.place_robot(*robot.position)
   end
 end

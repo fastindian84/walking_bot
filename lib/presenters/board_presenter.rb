@@ -5,7 +5,7 @@ module Presenters
       printable.print
     end
 
-    attr_reader :output, :robot
+    attr_reader :board, :robot
 
     def initialize(board, robot)
       @board = board
@@ -19,7 +19,7 @@ module Presenters
     private
 
     def table
-      @table ||= @board.table.to_a.reverse
+      @table ||= board.table.to_a.reverse
     end
 
     def columns
@@ -53,8 +53,11 @@ module Presenters
           cell = ''
           cell << '|' if row_index.zero?
 
-          if row == 1
+          if row == board.class::BOT_CELL
             cell << robot.face_sign
+            cell << '_' * (column_width - 1)
+          elsif row == board.class::OBSTACLE_CELL
+            cell << '+'
             cell << '_' * (column_width - 1)
           else
             cell << '_' * column_width

@@ -10,23 +10,33 @@ class Robot
   attr_reader :face
   attr_accessor :position
 
-  def initialize(face)
+  def initialize(face, position = [])
     @face = face
-    @position = []
+    @position = position
 
     validate!
   end
 
-  def turn_left!
-    next_index = face_index - 1
+  def clone
+    Robot.new(face, position)
+  end
 
-    @face = SIDES[next_index] || SIDES[3]
+  def left_side
+    next_index = face_index - 1
+    SIDES[next_index]
+  end
+
+  def right_side
+    next_index = face_index + 1
+    SIDES[next_index] || SIDES[0]
+  end
+
+  def turn_left!
+    @face = left_side
   end
 
   def turn_right!
-    next_index = face_index + 1
-
-    @face = SIDES[next_index] || SIDES[0]
+    @face = right_side
   end
 
   def row
@@ -53,6 +63,18 @@ class Robot
     when SOUTH then 'V'
     when EAST then '>'
     when WEST then '<'
+    end
+  end
+
+  def next_step_forward
+    if north?
+      [row + 1, column]
+    elsif south?
+      [row - 1, column]
+    elsif west?
+      [row, column - 1]
+    elsif east?
+      [row, column + 1]
     end
   end
 

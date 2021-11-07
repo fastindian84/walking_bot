@@ -7,6 +7,7 @@ class Board
 
   EMPTY_CELL = 0
   BOT_CELL = 1
+  OBSTACLE_CELL = 2
 
   attr_reader :rows, :columns, :bot, :position
 
@@ -17,7 +18,11 @@ class Board
     validate!
   end
 
-  def fill_cell(row, column)
+  def place_obstacle(row, column)
+    update_cell(OBSTACLE_CELL, row, column)
+  end
+
+  def place_robot(row, column)
     update_cell(BOT_CELL, row, column)
   end
 

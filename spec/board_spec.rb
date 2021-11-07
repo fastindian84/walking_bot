@@ -12,20 +12,20 @@ describe Board do
   context 'API' do
     let(:board) { Board.new(rows: 5, columns: 5) }
 
-    it '#fill_cell' do
+    it '#place_robot' do
       expect(board.table[3, 3]).to eq Board::EMPTY_CELL
-      board.fill_cell(3, 3)
+      board.place_robot(3, 3)
       expect(board.table[3, 3]).to eq Board::BOT_CELL
     end
 
     it '#free_cell' do
-      board.fill_cell(3, 3)
+      board.place_robot(3, 3)
       expect(board.table[3, 3]).to eq Board::BOT_CELL
       board.free_cell(3, 3)
       expect(board.table[3, 3]).to eq Board::EMPTY_CELL
     end
     it '#update_cell', 'raise error' do
-      expect { board.fill_cell(10, 10) }.to raise_error Board::OutOfRangeError
+      expect { board.place_robot(10, 10) }.to raise_error Board::OutOfRangeError
     end
 
     it '#available?' do
@@ -33,7 +33,7 @@ describe Board do
       expect(board.available?(0, 0)).to eq true
       expect(board.available?(5, 5)).to eq false
 
-      board.fill_cell(3, 3)
+      board.place_robot(3, 3)
       expect(board.available?(3, 3)).to eq false
     end
   end
