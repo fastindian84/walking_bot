@@ -82,8 +82,11 @@ class Action
       return
     end
 
-    @robot ||= Robot.new(face)
-    @robot.face = face
+    if @robot
+      @robot.face = face
+    else
+      @robot = Robot.new(face)
+    end
 
     simulation.place_robot(robot, row: row, column: column)
   end
