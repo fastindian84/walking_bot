@@ -7,18 +7,18 @@ class Robot
 
   SIDES = [NORTH, EAST, SOUTH, WEST].freeze
 
-  attr_reader :face
-  attr_accessor :position
+  attr_accessor :position, :face
 
-  def initialize(face, position = [])
+  def initialize(face)
     @face = face
-    @position = position
-
+    @position = []
     validate!
   end
 
   def clone
-    Robot.new(face, position)
+    dup = Robot.new(face)
+    dup.position = position
+    dup
   end
 
   def left_side

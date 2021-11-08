@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+require_relative '../lib/action.rb'
+puts 'Ready...'
+
+action_handler = Action.run
+
+action_handler.wait_loop

@@ -9,8 +9,8 @@ class Simulation
   end
 
   def place_robot(robot, row:, column:)
-    column = [column, board.columns - 1].min
-    row = [row, board.rows - 1].min
+    column = [column.to_i, board.columns - 1].min
+    row = [row.to_i, board.rows - 1].min
 
     @robot = robot
 
